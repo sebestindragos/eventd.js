@@ -1,5 +1,6 @@
 import {DomainEventType} from './domainEventType';
 import {IDomainEventService} from '../core/IDomainEventService'
+import {EventStore} from './eventStore';
 
 /**
  * Class managing domain events.
@@ -14,7 +15,7 @@ export class DomainEventService implements IDomainEventService {
   /**
    * Class constructor.
    */
-  constructor () {}
+  constructor (private _eventStore: EventStore) {}
 
   add <T> (name: string) {
     if (this._events.has(name)) {
@@ -33,5 +34,6 @@ export class DomainEventService implements IDomainEventService {
 
     let type: DomainEventType<T> = this._events.get(name);
     let event = type.getInstance(aggregateId, payload);
+    this._eventStore.add(event);
   }
 }

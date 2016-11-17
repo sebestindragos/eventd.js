@@ -1,7 +1,11 @@
+import {EVENTS} from './events';
+
 import {Context} from '../core/context';
 import {Aggregate} from '../core/aggregate';
 import {IAggregate} from '../core/IAggregate';
 import {Command, ICommand} from '../core/command';
+import {Projection} from '../core/projection';
+import {DomainEvent} from '../lib/domainEvent';
 
 let context = new Context();
 
@@ -15,8 +19,8 @@ interface ITodoUpdated {
   title: string
 }
 
-context.defineDomainEvent<ITodoCreated>('todo:created');
-context.defineDomainEvent<ITodoUpdated>('todo:updated');
+context.defineDomainEvent<ITodoCreated>(EVENTS.todoCreated);
+context.defineDomainEvent<ITodoUpdated>(EVENTS.todoUpdated);
 
 /**
  * Register aggregates
@@ -32,14 +36,14 @@ class Todo extends Aggregate implements IAggregate {
     if (!info || !info.title)
       throw new Error ('title is missing');
 
-    this.emitDomainEvent<ITodoCreated>('todo:created', {title: info.title});
+    this.emitDomainEvent<ITodoCreated>(EVENTS.todoCreated, {title: info.title});
   }
 
   update (info: {title: string}) {
     if (!info || !info.title)
       throw new Error ('title is missing');
 
-    this.emitDomainEvent<ITodoUpdated>('todo:updated', {title: info.title});
+    this.emitDomainEvent<ITodoUpdated>(EVENTS.todoUpdated, {title: info.title});
   }
 }
 
@@ -64,6 +68,9 @@ class CreateTodo extends Command implements ICommand {
 class UpdateTodo extends Command implements ICommand {
   constructor (private _data: {todoId: string, title: string}) {
     super();
+
+    if (!_data.todoId)
+      throw new Error('no id provided');
   }
   execute () : Promise<any> {
     return new Promise<any>((resolve, reject) => {
@@ -80,6 +87,27 @@ class UpdateTodo extends Command implements ICommand {
 context.registerCommand<CreateTodo>('createTodo', CreateTodo);
 context.registerCommand<UpdateTodo>('updateTodo', UpdateTodo);
 
+/**
+ * Register projections.
+ */
+let todos = new Map<string, any>();
+
+class Todos extends Projection {
+  constructor () {
+    super();
+  }
+
+  [EVENTS.todoCreated] (event: DomainEvent<ITodoCreated>) {
+    todos.set(event._aggregateId, event._payload);
+  }
+
+  [EVENTS.todoUpdated] (event: DomainEvent<ITodoUpdated>) {
+    console.log(event);
+    todos.get(event._aggregateId).title = event._payload.title;
+  }
+}
+
+context.registerProjection(Todos);
 
 // --------------------------------------------------------------------------------------------------------------
 /**
@@ -87,6 +115,6 @@ context.registerCommand<UpdateTodo>('updateTodo', UpdateTodo);
  */
 
 context.command('createTodo', {title: 'asd'})
-  .then(todoId => context.command('updateTodo', {title: 'bla'}))
-  .then(() => console.log('done'))
+  .then(todoId => context.command('updateTodo', {todoId: todoId, title: 'bla'}))
+  .then(() => console.log('done', todos))
   .catch(err => console.error(err));

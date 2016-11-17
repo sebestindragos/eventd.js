@@ -3,7 +3,10 @@ import {AggregateService} from '../lib/aggregateService';
 import {Aggregate} from './aggregate';
 import {CommandService} from '../lib/commandService';
 import {Command} from './command';
+import {EventStore} from '../lib/eventStore';
 import {MemoryRepository} from '../lib/memoryRepository';
+import {ProjectionService} from '../lib/projectionService';
+import {Projection} from './projection';
 
 /**
  * Class representing a bounded context.
@@ -11,9 +14,11 @@ import {MemoryRepository} from '../lib/memoryRepository';
  * @author Dragos Sebestin
  */
 export class Context {
-  private _domainEventService = new DomainEventService();
-  private _aggregateService = new AggregateService(this._domainEventService, new MemoryRepository());
+  private _eventStore = new EventStore(new MemoryRepository());
+  private _domainEventService = new DomainEventService(this._eventStore);
+  private _aggregateService = new AggregateService(this._domainEventService, this._eventStore);
   private _commandService = new CommandService();
+  private _projectionService = new ProjectionService(this._eventStore);
 
   /**
    * Class contructor.
@@ -59,5 +64,12 @@ export class Context {
     cmd.$aggregate = this._aggregateService;
 
     return cmd.execute();
+  }
+
+  /**
+   * Register a new type of projection on this context.
+   */
+  registerProjection <T extends Projection> (typeClass: {new (...args: any[]) : T}) : void {
+    this._projectionService.add(typeClass);
   }
 }

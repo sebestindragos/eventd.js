@@ -23,7 +23,9 @@
     "typescript": "^2.0.10"
   },
   "dependencies": {
+    "@types/chai": "^3.4.34",
     "@types/node-uuid": "0.0.28",
-    "node-uuid": "^1.4.7"
+    "node-uuid": "^1.4.7",
+    "rxjs": "^5.0.0-rc.3"
   }
 }

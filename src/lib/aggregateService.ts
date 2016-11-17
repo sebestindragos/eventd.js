@@ -36,14 +36,11 @@ export interface IAggregateService {
  */
 export class AggregateService implements IAggregateService {
   private _aggregates = new Map<string, AggregateType<any>>();
-  private _eventStore: EventStore;
 
   /**
    * Class constructor.
    */
-  constructor (private _domainEventService: IDomainEventService, repository: IRepository) {
-    this._eventStore = new EventStore(repository);
-  }
+  constructor (private _domainEventService: IDomainEventService, private _eventStore: EventStore) { }
 
   /**
    * Add a type of aggregate.
