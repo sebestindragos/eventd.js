@@ -1,0 +1,25 @@
+{
+  "name": "eventd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebestindragos/eventd.git"
+  },
+  "author": "Dragos Sebestin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sebestindragos/eventd/issues"
+  },
+  "homepage": "https://github.com/sebestindragos/eventd#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-sourcemaps": "^2.2.0",
+    "gulp-typescript": "^3.1.3",
+    "typescript": "^2.0.10"
+  }
+}
