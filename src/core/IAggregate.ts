@@ -1,14 +1,13 @@
+import {IDomainEventService} from './IDomainEventService';
+
 /**
  * Aggregate interface.
  * 
  * @author Dragos Sebestin
  */
 export interface IAggregate {
-
-  create (...args: any[]) : void;
-
   /**
-   * Emit a new domain event.
+   * Create a new aggregate.
    */
-  //$emitDomainEvent <T> (name: string, payload: T) : void;
+  create (...args: any[]) : void;
 }

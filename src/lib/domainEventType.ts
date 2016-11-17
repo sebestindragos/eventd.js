@@ -15,7 +15,7 @@ export class DomainEventType<Type> {
   /**
    * Get an instance of this domain event type.
    */
-  getInstance (payload: Type) : DomainEvent<Type> {
-    return new DomainEvent<Type>(this._name, payload);
+  getInstance (aggregateId: string, payload: Type) : DomainEvent<Type> {
+    return new DomainEvent<Type>(this._name, aggregateId, payload);
   }
 }

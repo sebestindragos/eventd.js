@@ -11,7 +11,11 @@ gulp.task('compile', () => {
   ])
   .pipe(sourcemaps.init())
   .pipe(ts())
-  .pipe(sourcemaps.write())
+  .pipe(sourcemaps.write('.', {
+    sourceRoot: (file) => {
+      return file.cwd + '/src'
+    }
+  }))
   .pipe(gulp.dest('build/'));
 });
 

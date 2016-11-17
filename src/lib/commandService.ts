@@ -19,7 +19,7 @@ export class CommandService {
    */
   add <T extends Command> (name: string, typeClass: {new (...args: any[]) : T}) : void {
     if (this._commands.has(name))
-      throw new Error('Command type [' + name + '] is already registered');
+      throw new Error(`Command type [' + name + '] is already registered`);
 
     let type = new CommandType<T>(typeClass);
     this._commands.set(name, type);
@@ -30,7 +30,7 @@ export class CommandService {
    */
   create (name: string, ...args: any[]) : ICommand {
     if (!this._commands.has(name))
-      throw new Error('There is no [${name}] command registered');
+      throw new Error(`There is no [${name}] command registered`);
 
     let type = this._commands.get(name);
     return type.getInstance(...args);

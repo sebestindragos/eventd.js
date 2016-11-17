@@ -3,6 +3,7 @@ import {AggregateService} from '../lib/aggregateService';
 import {Aggregate} from './aggregate';
 import {CommandService} from '../lib/commandService';
 import {Command} from './command';
+import {MemoryRepository} from '../lib/memoryRepository';
 
 /**
  * Class representing a bounded context.
@@ -11,7 +12,7 @@ import {Command} from './command';
  */
 export class Context {
   private _domainEventService = new DomainEventService();
-  private _aggregateService = new AggregateService();
+  private _aggregateService = new AggregateService(this._domainEventService, new MemoryRepository());
   private _commandService = new CommandService();
 
   /**
