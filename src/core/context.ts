@@ -7,6 +7,8 @@ import {EventStore} from '../lib/eventStore';
 import {MemoryRepository} from '../lib/memoryRepository';
 import {ProjectionService} from '../lib/projectionService';
 import {Projection} from './projection';
+import {QueryService} from '../lib/queryService';
+import {IQuery, Query} from './query';
 
 /**
  * Class representing a bounded context.
@@ -19,6 +21,7 @@ export class Context {
   private _aggregateService = new AggregateService(this._domainEventService, this._eventStore);
   private _commandService = new CommandService();
   private _projectionService = new ProjectionService(this._eventStore);
+  private _queryService = new QueryService();
 
   /**
    * Class contructor.
@@ -71,5 +74,21 @@ export class Context {
    */
   registerProjection <T extends Projection> (typeClass: {new (...args: any[]) : T}) : void {
     this._projectionService.add(typeClass);
+  }
+
+  /**
+   * Register a new type of query on this context.
+   */
+  registerQuery <PayloadType, T extends IQuery<PayloadType> & Query> (typeClass: {new (...args: any[]) : T}) : void {
+    this._queryService.add(typeClass);
+  }
+
+  /**
+   * Run a query.
+   * 
+   * @param name the name of the registered query to execute.
+   */
+  query <PayloadType> (name: string) : Promise<PayloadType> {
+    return this._queryService.run<PayloadType>(name);
   }
 }

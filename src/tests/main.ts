@@ -6,6 +6,7 @@ import {IAggregate} from '../core/IAggregate';
 import {Command, ICommand} from '../core/command';
 import {Projection} from '../core/projection';
 import {DomainEvent} from '../lib/domainEvent';
+import {IQuery, Query} from '../core/query';
 
 let context = new Context();
 
@@ -90,7 +91,10 @@ context.registerCommand<UpdateTodo>('updateTodo', UpdateTodo);
 /**
  * Register projections.
  */
-let todos = new Map<string, any>();
+interface ITodo {
+  title: string
+}
+let todos = new Map<string, ITodo>();
 
 class Todos extends Projection {
   constructor () {
@@ -109,6 +113,18 @@ class Todos extends Projection {
 
 context.registerProjection(Todos);
 
+/**
+ * Register queries.
+ */
+class GetTodos extends Query implements IQuery<ITodo[]> {
+
+  execute () : Promise<ITodo[]> {
+    return Promise.resolve<ITodo[]>(Array.from(todos.values()));
+  }
+}
+
+context.registerQuery(GetTodos);
+
 // --------------------------------------------------------------------------------------------------------------
 /**
  * Tests.
@@ -116,5 +132,6 @@ context.registerProjection(Todos);
 
 context.command('createTodo', {title: 'asd'})
   .then(todoId => context.command('updateTodo', {todoId: todoId, title: 'bla'}))
-  .then(() => console.log('done', todos))
+  .then(() => context.query('GetTodos'))
+  .then(todos => console.log('done', todos))
   .catch(err => console.error(err));
