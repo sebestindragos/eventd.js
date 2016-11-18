@@ -1,11 +1,11 @@
-import {DomainEventService} from '../lib/domainEventService';
-import {AggregateService} from '../lib/aggregateService';
-import {Aggregate} from './aggregate';
-import {CommandService} from '../lib/commandService';
-import {Command} from './command';
+import {DomainEventService} from '../lib/domainEvent/domainEventService';
+import {AggregateService} from '../lib/aggregate/aggregateService';
+import {IAggregate, Aggregate} from './aggregate';
+import {CommandService} from '../lib/command/commandService';
+import {ICommand, Command} from './command';
 import {EventStore} from '../lib/eventStore';
 import {MemoryRepository} from '../lib/memoryRepository';
-import {ProjectionService} from '../lib/projectionService';
+import {ProjectionService} from '../lib/projection/projectionService';
 import {Projection} from './projection';
 import {QueryService} from '../lib/queryService';
 import {IQuery, Query} from './query';
@@ -43,8 +43,8 @@ export class Context {
    * @param name unique name of the aggregate
    * @param typeClass
    */
-  registerAggregate <T extends Aggregate> (name, typeClass: {new (...args: any[]) : T}) : void {
-    this._aggregateService.add<T>(name, typeClass);
+  registerAggregate <T extends IAggregate & Aggregate> (typeClass: {new (...args: any[]) : T}) : void {
+    this._aggregateService.add<T>(typeClass);
   }
 
   /**
@@ -53,8 +53,8 @@ export class Context {
    * @param name unique name of the command
    * @param typeClass
    */
-  registerCommand <T extends Command> (name: string, typeClass: {new (...args: any[]) : T}) : void {
-    this._commandService.add<T>(name, typeClass);
+  registerCommand <T extends ICommand & Command> (typeClass: {new (...args: any[]) : T}) : void {
+    this._commandService.add<T>(typeClass);
   }
 
   /**

@@ -1,4 +1,4 @@
-import {Projection} from '../core/projection';
+import {Projection} from '../../core/projection';
 
 /**
  * Class representing a type of projection.

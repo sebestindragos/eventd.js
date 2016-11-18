@@ -1,5 +1,5 @@
 import {IRepository} from '../core/IRepository';
-import {DomainEvent} from './domainEvent';
+import {DomainEvent} from '../core/domainEvent';
 import {Subject} from 'rxjs';
 
 /**

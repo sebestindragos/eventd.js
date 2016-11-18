@@ -1,11 +1,10 @@
 import {EVENTS} from './events';
 
 import {Context} from '../core/context';
-import {Aggregate} from '../core/aggregate';
-import {IAggregate} from '../core/IAggregate';
+import {IAggregate, Aggregate} from '../core/aggregate';
 import {Command, ICommand} from '../core/command';
 import {Projection} from '../core/projection';
-import {DomainEvent} from '../lib/domainEvent';
+import {DomainEvent} from '../core/domainEvent';
 import {IQuery, Query} from '../core/query';
 
 let context = new Context();
@@ -33,11 +32,12 @@ class Todo extends Aggregate implements IAggregate {
     super();
   }
 
-  create (info: {title: string}) {
+  create (info: {title: string}) : Promise<void> {
     if (!info || !info.title)
       throw new Error ('title is missing');
 
     this.emitDomainEvent<ITodoCreated>(EVENTS.todoCreated, {title: info.title});
+    return Promise.resolve();
   }
 
   update (info: {title: string}) {
@@ -48,7 +48,7 @@ class Todo extends Aggregate implements IAggregate {
   }
 }
 
-context.registerAggregate<Todo>('Todo', Todo);
+context.registerAggregate(Todo);
 
 /**
  * Regiser commands.
@@ -85,8 +85,8 @@ class UpdateTodo extends Command implements ICommand {
   }
 }
 
-context.registerCommand<CreateTodo>('createTodo', CreateTodo);
-context.registerCommand<UpdateTodo>('updateTodo', UpdateTodo);
+context.registerCommand(CreateTodo);
+context.registerCommand(UpdateTodo);
 
 /**
  * Register projections.
@@ -106,7 +106,6 @@ class Todos extends Projection {
   }
 
   [EVENTS.todoUpdated] (event: DomainEvent<ITodoUpdated>) {
-    console.log(event);
     todos.get(event._aggregateId).title = event._payload.title;
   }
 }
@@ -130,8 +129,8 @@ context.registerQuery(GetTodos);
  * Tests.
  */
 
-context.command('createTodo', {title: 'asd'})
-  .then(todoId => context.command('updateTodo', {todoId: todoId, title: 'bla'}))
+context.command('CreateTodo', {title: 'asd'})
+  .then(todoId => context.command('UpdateTodo', {todoId: todoId, title: 'bla'}))
   .then(() => context.query('GetTodos'))
   .then(todos => console.log('done', todos))
   .catch(err => console.error(err));

@@ -1,4 +1,4 @@
-import {IDomainEventService} from './IDomainEventService';
+import {IDomainEventService} from '../lib/domainEvent/domainEventService';
 
 /**
  * Aggregate base class.
@@ -6,9 +6,9 @@ import {IDomainEventService} from './IDomainEventService';
  * @author Dragos Sebestin
  */
 export class Aggregate {
+  private _domainEvent: IDomainEventService;
   _id: string;
-  _domainEvent: IDomainEventService;
-
+  
   /**
    * Class constructor.
    */
@@ -20,10 +20,17 @@ export class Aggregate {
   emitDomainEvent <T> (name: string, payload: T) {
     this._domainEvent.emit(name, this._id, payload);
   }
-  
-  // empty method used for compiler warning
-  create (...args: any[]) {}
+}
 
-  // --------------------------------------------------------------------------------
-  // class internal methods
+/**
+ * Aggregate interface.
+ * 
+ * @author Dragos Sebestin
+ */
+export interface IAggregate {
+
+  /**
+   * Create a new aggregate.
+   */
+  create (...args: any[]) : Promise<void>;
 }

@@ -21,6 +21,6 @@ export class QueryService {
       throw new Error(`There is no [${name}] type query registered.`);
 
     let query: IQuery<PayloadType> = this._queries.get(name);
-    return query.execute();
+    return query.execute(...args);
   } 
 }

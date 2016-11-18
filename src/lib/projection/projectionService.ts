@@ -1,7 +1,7 @@
 import {ProjectionType} from './projectionType';
-import {Projection, IProjection} from '../core/projection';
-import {EventStore} from './eventStore';
-import {DomainEvent} from './domainEvent';
+import {Projection, IProjection} from '../../core/projection';
+import {EventStore} from '../eventStore';
+import {DomainEvent} from '../../core/domainEvent';
 
 /**
  * Class managing projections.

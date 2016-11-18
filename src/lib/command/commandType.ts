@@ -1,11 +1,11 @@
-import {Command} from '../core/command';
+import {ICommand, Command} from '../../core/command';
 
 /**
  * Class managing a registered command type on the context.
  * 
  * @author Dragos Sebestin
  */
-export class CommandType<T extends Command> {
+export class CommandType<T extends ICommand & Command> {
 
   /**
    * Class constructor.

@@ -1,5 +1,5 @@
 import {IRepository} from '../core/IRepository';
-import {DomainEvent} from './domainEvent';
+import {DomainEvent} from '../core/domainEvent';
 
 /**
  * Class implementing an in memory type repository.

@@ -1,6 +1,19 @@
 import {DomainEventType} from './domainEventType';
-import {IDomainEventService} from '../core/IDomainEventService'
-import {EventStore} from './eventStore';
+import {DomainEvent} from '../../core/domainEvent';
+import {EventStore} from '../eventStore';
+
+/**
+ * Domain event service interface.
+ * 
+ * @author Dragos Sebestin
+ */
+export interface IDomainEventService {
+
+  /**
+   * Emit a new domain event.
+   */
+  emit <T> (name: string, aggregateId: string, payload: T) : void;
+}
 
 /**
  * Class managing domain events.
@@ -17,22 +30,22 @@ export class DomainEventService implements IDomainEventService {
    */
   constructor (private _eventStore: EventStore) {}
 
-  add <T> (name: string) {
+  add <PayloadType> (name: string) {
     if (this._events.has(name)) {
-      throw new Error(`Domain event type [' + name + '] is already registered`);
+      throw new Error(`Domain event type [${name}] is already registered.`);
     }
     
-    let eventType = new DomainEventType<T>(name);
+    let eventType = new DomainEventType<PayloadType>(name, DomainEvent);
     this._events.set(name, eventType);
   }
 
   // ------------------------------------------------------------------------------------------
   // IDomainEventService interface methods
-  emit <T> (name: string, aggregateId: string, payload: T) : void {
+  emit <PayloadType> (name: string, aggregateId: string, payload: PayloadType) : void {
     if (!this._events.has(name))
       throw new Error(`Domain event type [${name}] is not registered.`);
 
-    let type: DomainEventType<T> = this._events.get(name);
+    let type: DomainEventType<PayloadType> = this._events.get(name);
     let event = type.getInstance(aggregateId, payload);
     this._eventStore.add(event);
   }

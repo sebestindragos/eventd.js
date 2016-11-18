@@ -1,12 +1,10 @@
 import * as uuid from 'node-uuid';
 
 import {AggregateType} from './aggregateType';
-import {Aggregate} from '../core/aggregate';
-import {IAggregate} from '../core/IAggregate';
-import {IDomainEventService} from '../core/IDomainEventService';
-import {EventStore} from './eventStore';
-import {IRepository} from '../core/IRepository';
-import {DomainEvent} from './domainEvent';
+import {Aggregate,IAggregate} from '../../core/aggregate';
+import {IDomainEventService} from '../domainEvent/domainEventService';
+import {EventStore} from '../eventStore';
+import {DomainEvent} from '../../core/domainEvent';
 
 /**
  * Aggregate service interface.
@@ -48,9 +46,10 @@ export class AggregateService implements IAggregateService {
    * @param name unique name of the aggregate.
    * @param typeClass class type that will be used to initialize objects.
    */
-  add <T extends Aggregate> (name, typeClass: {new (...args: any[]) : T}) : void {
+  add <T extends IAggregate & Aggregate> (typeClass: {new (...args: any[]) : T}) : void {
+    let name = typeClass.name;
     if (this._aggregates.has(name))
-      throw new Error(`Aggregate type [' + name +'] is already registered`);
+      throw new Error(`Aggregate type [' + name +'] is already registered.`);
 
     let type = new AggregateType<T>(typeClass);
     this._aggregates.set(name, type);
@@ -60,12 +59,14 @@ export class AggregateService implements IAggregateService {
   // IAggregateService interface methods
 
   create (name: string, ...args: any[]) : Promise<string> {
-    let aggregate = this.getAggregateInstance(name, uuid.v4());
+    return new Promise<string>((resolve, reject) => {
+      let aggregate = this.getAggregateInstance(name, uuid.v4());
 
-    // run methods
-    aggregate.create(...args);
+      // run methods
+      aggregate.create(...args);
 
-    return Promise.resolve(aggregate._id);
+      resolve(aggregate._id);
+    });
   } 
 
   load (name: string, aggregateId: string) : Promise<IAggregate> {
@@ -82,13 +83,13 @@ export class AggregateService implements IAggregateService {
   
   // ------------------------------------------------------------------------------------------
   // class private methods
-  getAggregateInstance (name: string, id: string) : Aggregate {
+  getAggregateInstance (name: string, id: string) : Aggregate & IAggregate {
     if (!this._aggregates.has(name))
       throw new Error(`There is no [${name} aggregate registered.`);
     
     // create aggregate instance
     let type = this._aggregates.get(name);
-    let aggregate = type.getInstance() as Aggregate;
+    let aggregate = type.getInstance();
 
     // configure instance
     aggregate._id = id;

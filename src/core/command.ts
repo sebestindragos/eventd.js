@@ -1,4 +1,4 @@
-import {IAggregateService} from '../lib/aggregateService';
+import {IAggregateService} from '../lib/aggregate/aggregateService';
 
 /**
  * Class representing a context command.
@@ -6,7 +6,7 @@ import {IAggregateService} from '../lib/aggregateService';
  * @author Dragos Sebestin
  */
 export class Command {
-  public $aggregate: IAggregateService;
+  $aggregate: IAggregateService;
 
   /**
    * Class constructor.
@@ -20,7 +20,6 @@ export class Command {
  * @author Dragos Sebestin
  */
 export interface ICommand {
-  $aggregate: IAggregateService;
 
   /**
    * execute this command.

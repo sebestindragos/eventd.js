@@ -1,4 +1,4 @@
-import {DomainEvent} from '../lib/domainEvent';
+import {DomainEvent} from '../core/domainEvent';
 
 /**
  * Repository interface.
