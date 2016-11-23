@@ -15,7 +15,7 @@ export class ProjectionService {
    * Class constructor.
    */
   constructor (private _eventStore: EventStore) {
-    _eventStore.eventStream.subscribe(event => {
+    _eventStore.eventStream.subscribe('', event => {
       for (let projection of this._projections) {
         if (typeof projection[event._name] === 'function') {
           projection[event._name](event);

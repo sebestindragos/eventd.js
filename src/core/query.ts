@@ -10,8 +10,6 @@ export class Query {
    * Class constructor.
    */
   constructor () {}
-
-  foo () {}
 }
 
 /**

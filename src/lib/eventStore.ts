@@ -1,6 +1,6 @@
 import {IRepository} from '../core/IRepository';
 import {DomainEvent} from '../core/domainEvent';
-import {Subject} from 'rxjs';
+import {IMessageBus} from '../core/IMessageBus';
 
 /**
  * Class used for managing persistance of domain events.
@@ -10,12 +10,14 @@ import {Subject} from 'rxjs';
  */
 export class EventStore {
 
-  eventStream = new Subject<DomainEvent<any>>();
+  eventStream: IMessageBus;
 
   /**
    * Class constructor.
    */
-  constructor (private _repository: IRepository) {}
+  constructor (private _repository: IRepository, messageBus: IMessageBus) {
+    this.eventStream = messageBus;
+  }
 
   /**
    * Fetch domain events for a given aggregate.
@@ -31,7 +33,7 @@ export class EventStore {
     return new Promise<void>((resolve, reject) => {
       this._repository.save(event)
         .then(() => {
-          this.eventStream.next(event);
+          this.eventStream.publish(event);
         })
         .catch(err => reject(err));
     });

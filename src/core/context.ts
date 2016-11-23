@@ -9,6 +9,7 @@ import {ProjectionService} from '../lib/projection/projectionService';
 import {Projection} from './projection';
 import {QueryService} from '../lib/queryService';
 import {IQuery, Query} from './query';
+import {MemoryMessageBus} from '../lib/memoryMessageBus';
 
 /**
  * Class representing a bounded context.
@@ -16,7 +17,7 @@ import {IQuery, Query} from './query';
  * @author Dragos Sebestin
  */
 export class Context {
-  private _eventStore = new EventStore(new MemoryRepository());
+  private _eventStore = new EventStore(new MemoryRepository(), new MemoryMessageBus());
   private _domainEventService = new DomainEventService(this._eventStore);
   private _aggregateService = new AggregateService(this._domainEventService, this._eventStore);
   private _commandService = new CommandService();
