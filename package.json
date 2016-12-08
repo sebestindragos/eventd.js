@@ -2,7 +2,8 @@
   "name": "eventd",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "build/main.js",
+  "typings": "build/main.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
