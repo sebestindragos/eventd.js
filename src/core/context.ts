@@ -67,7 +67,7 @@ export class Context {
     let cmd = this._commandService.create(name, ...args);
     cmd.$aggregate = this._aggregateService;
 
-    return cmd.execute();
+    return cmd.execute(...args);
   }
 
   /**

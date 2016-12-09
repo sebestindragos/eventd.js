@@ -24,5 +24,5 @@ export interface ICommand {
   /**
    * execute this command.
    */
-  execute () : Promise<any>;
+  execute (...args: any[]) : Promise<any>;
 }
