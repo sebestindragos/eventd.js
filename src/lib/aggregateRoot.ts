@@ -1,5 +1,3 @@
-import * as uuid from 'node-uuid';
-
 import {IEvent, Event} from './event';
 
 /**
@@ -8,7 +6,7 @@ import {IEvent, Event} from './event';
  * @author Dragos Sebestin
  */
 export class AggregateRoot {
-  id: uuid.UUID = null;
+  id: string = null; // UUID
   version: number = -1;
 
   private _changes: IEvent<any>[] = [];
@@ -28,7 +26,7 @@ export class AggregateRoot {
   /**
    * Apply a domain event on the aggregate to change it's state.
    */
-  private applyChange (event: IEvent<any>, isNew: boolean = true) : void {
+  applyChange (event: IEvent<any>, isNew: boolean = true) : void {
     if (isNew)
       this._changes.push(event);
 
@@ -37,7 +35,7 @@ export class AggregateRoot {
     if ( !internalHandler || (typeof internalHandler !== 'function') )
       throw new Error(`Aggregate must have a ${event.name} handler.`);
 
-    internalHandler(event);
+    internalHandler.call(this, event);
   }
 }
 

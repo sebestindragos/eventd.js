@@ -1,12 +1,10 @@
-import * as uuid from 'node-uuid';
-
 /**
  * Domain event interface.
  *
  * @author Dragos Sebestin
  */
 export interface IEvent <Payload> {
-  aggregateId: uuid.UUID,
+  aggregateId: string,
   name: string,
   timestamp: number,
   version: number,
@@ -29,7 +27,7 @@ export class Event <Payload> implements IEvent<Payload> {
    * Class constructor.
    */
   constructor (
-    aggregateId: uuid.UUID,
+    aggregateId: string,
     name: string,
     version: number,
     payload: Payload

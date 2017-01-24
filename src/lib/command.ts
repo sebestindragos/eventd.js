@@ -1,12 +1,10 @@
-import * as uuid from 'node-uuid';
-
 /**
  * Command interface.
  *
  * @author Dragos Sebestin
  */
 export interface ICommand <Payload> {
-  aggregateId: uuid.UUID,
+  aggregateId: string,
   timestamp: number,
 
   payload: Payload
@@ -18,7 +16,7 @@ export interface ICommand <Payload> {
  * @author Dragos Sebestin
  */
 export class Command <Payload> implements ICommand<Payload> {
-  aggregateId: uuid.UUID = null;
+  aggregateId: string = null;
   timestamp: number = Date.now();
 
   payload: Payload = null;
@@ -27,7 +25,7 @@ export class Command <Payload> implements ICommand<Payload> {
    * Class constructor.
    */
   constructor (
-    aggregateId: uuid.UUID,
+    aggregateId: string,
     payload: Payload
   ) {
     this.aggregateId = aggregateId;

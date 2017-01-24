@@ -1,4 +1,3 @@
-import {EventStore} from './eventStore';
 import {ICommandHandler} from './ICommandHandler';
 import {ICommand} from './command';
 
@@ -31,7 +30,7 @@ export class LocalContext implements IContext {
   /**
    * Class constructor.
    */
-  constructor (private _name: string, private _eventStore: EventStore) {}
+  constructor (private _name: string) {}
 
   /**
    * IContext interface methods.

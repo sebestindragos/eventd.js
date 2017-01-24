@@ -1,5 +1,3 @@
-import * as uuid from 'node-uuid';
-
 import {IEvent} from './event';
 
 /**
@@ -17,5 +15,5 @@ export interface IRepository {
   /**
    * Load domain events for a given aggregate.
    */
-  load (aggregateId: uuid.UUID) : Promise<IEvent<any>[]>;
+  load (aggregateId: string) : Promise<IEvent<any>[]>;
 }
