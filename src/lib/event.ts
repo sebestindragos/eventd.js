@@ -2,6 +2,8 @@ import * as uuid from 'node-uuid';
 
 /**
  * Domain event interface.
+ *
+ * @author Dragos Sebestin
  */
 export interface IEvent <Payload> {
   aggregateId: uuid.UUID,
