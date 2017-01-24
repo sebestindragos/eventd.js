@@ -6,15 +6,25 @@ import {IEvent, Event} from './event';
  * @author Dragos Sebestin
  */
 export class AggregateRoot {
-  id: string = null; // UUID
-  version: number = -1;
+  private _id: string = null; // UUID
+  private _version: number = -1;
 
   private _changes: IEvent<any>[] = [];
 
   /**
    * Class constructor.
    */
-  constructor () { }
+  constructor (id: string) {
+    this._id = id;
+   }
+
+   get id () : string {
+     return this._id;
+   }
+
+   get version () : number {
+     return this._version;
+   }
 
   /**
    * Retrieve and reset the list of uncommited changes.
@@ -23,10 +33,14 @@ export class AggregateRoot {
     return this._changes;
   }
 
+  loadFromEvents (events: IEvent<any>[]) : void {
+    events.forEach(event => this.applyChange(event, false));
+  }
+
   /**
    * Apply a domain event on the aggregate to change it's state.
    */
-  applyChange (event: IEvent<any>, isNew: boolean = true) : void {
+  protected applyChange (event: IEvent<any>, isNew: boolean = true) : void {
     if (isNew)
       this._changes.push(event);
 
@@ -36,6 +50,9 @@ export class AggregateRoot {
       throw new Error(`Aggregate must have a ${event.name} handler.`);
 
     internalHandler.call(this, event);
+
+    // increase aggregate version
+    this._version = event.version;
   }
 }
 

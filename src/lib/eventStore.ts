@@ -31,4 +31,12 @@ export class EventStore {
     promises = events.map(event => this._eventBus.publish(event));
     await Promise.all(promises);
   }
+
+  /**
+   * Rehydrate an aggregate by replaying events from the store.
+   */
+  async rehydrate (aggregate: AggregateRoot) : Promise<void> {
+    let events = await this._repository.load(aggregate.id);
+    aggregate.loadFromEvents(events);
+  }
 }
