@@ -1,4 +1,5 @@
 export const EVENTS = {
   todoCreated: 'todo:created',
-  todoUpdated: 'todo:updated'
+  todoTitleChanged: 'todo:titleChanged',
+  todoResolved: 'todo:resolved',
 };
