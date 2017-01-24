@@ -53,19 +53,25 @@ class Todo extends AggregateRoot {
   private _title: string;
   private _checked: boolean;
 
-  constructor (aggregateId?: string, payload?: ITodoCreated) {
-    super();
+  constructor (todoId: string, payload?: ITodoCreated) {
+    super(todoId);
 
-    if (aggregateId) {
-      if (!payload)
-        throw new Error(`Todo aggregate constructor requires an ITodoCreated type payload.`);
-      this.applyChange(new TodoCreated(aggregateId, this.version + 1, payload));
-    }
+    if (payload)
+      this.applyChange(new TodoCreated(this.id, this.version + 1, payload));
+  }
+
+  changeTitle (newTitle: string) {
+    console.log(this.version);
+    this.applyChange(new TodoTitleChanged(this.id, this.version + 1, {title: newTitle}));
   }
 
   [EVENTS.todoCreated] (event: IEvent<ITodoCreated>) {
     this._title = event.payload.title;
     this._checked = event.payload.checked;
+  }
+
+  [EVENTS.todoTitleChanged] (event: IEvent<ITodoTitleChanged>) {
+    this._title = event.payload.title;
   }
 }
 
@@ -97,7 +103,12 @@ class ChangeTodoTitleHandler implements ICommandHandler<IChangeTodoTitle> {
   constructor (private _eventStore: EventStore) { }
 
   async execute (cmd: ChangeTodoTitle) : Promise<void> {
+    let todo = new Todo(cmd.aggregateId);
+    await this._eventStore.rehydrate(todo);
 
+    todo.changeTitle(cmd.payload.title);
+
+    this._eventStore.save(todo);
   }
 }
 
@@ -121,6 +132,9 @@ async function runTests () {
     let newTodoId = uuid.v1();
 
     await context.command('CreateTodo', new Command<ICreateTodo>(newTodoId, {title: 'finish project'}));
+    await context.command('ChangeTodoTitle', new Command<IChangeTodoTitle>(newTodoId, {
+      title: 'finish project sometime this year ...'
+    }));
 
   } catch (ex) {
     console.trace(ex);
