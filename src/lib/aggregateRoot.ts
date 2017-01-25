@@ -22,8 +22,8 @@ export class AggregateRoot {
      return this._id;
    }
 
-   get version () : number {
-     return this._version;
+   getNextVersion () : number {
+     return this._version + 1;
    }
 
   /**
@@ -50,6 +50,8 @@ export class AggregateRoot {
       throw new Error(`Aggregate must have a ${event.name} handler.`);
 
     internalHandler.call(this, event);
+
+    // handle concurency exceptions
 
     // increase aggregate version
     this._version = event.version;

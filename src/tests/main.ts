@@ -57,12 +57,11 @@ class Todo extends AggregateRoot {
     super(todoId);
 
     if (payload)
-      this.applyChange(new TodoCreated(this.id, this.version + 1, payload));
+      this.applyChange(new TodoCreated(super.id, super.getNextVersion(), payload));
   }
 
   changeTitle (newTitle: string) {
-    console.log(this.version);
-    this.applyChange(new TodoTitleChanged(this.id, this.version + 1, {title: newTitle}));
+    this.applyChange(new TodoTitleChanged(super.id, super.getNextVersion(), {title: newTitle}));
   }
 
   [EVENTS.todoCreated] (event: IEvent<ITodoCreated>) {
