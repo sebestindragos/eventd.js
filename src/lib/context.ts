@@ -69,7 +69,7 @@ export class LocalContext implements IContext {
  *
  * @author Dragos Sebestin
  */
-class RemoteContext implements IContext {
+export class RemoteContext implements IContext {
   private _projections: Array<{
     isForEvent: string,
     handler: IProjection
