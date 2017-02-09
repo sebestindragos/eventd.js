@@ -1,6 +1,6 @@
 {
   "name": "eventd.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "JavaScript library used for developing applications based on (D)DDD, CQRS and Event Sourcing.",
   "keywords": [
     "ddd",
