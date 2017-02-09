@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sebestindragos/eventd.git"
+    "url": "git+https://github.com/sebestindragos/eventd.js.git"
   },
   "author": "Dragos Sebestin",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sebestindragos/eventd/issues"
+    "url": "https://github.com/sebestindragos/eventd.js/issues"
   },
-  "homepage": "https://github.com/sebestindragos/eventd#readme",
+  "homepage": "https://github.com/sebestindragos/eventd.js#readme",
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-sourcemaps": "^2.2.0",
