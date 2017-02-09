@@ -9,6 +9,8 @@ import {MemoryRepository} from './memoryRepository';
 import {MemoryEventBus} from './memoryEventBus';
 import {EventStore} from '../lib/eventStore';
 import {LocalContext} from '../lib/context';
+import {EventHandler} from '../lib/eventHandler';
+import {IEventDispatcher} from '../lib/IEventDispatcher';
 
 /**
  * Define events
@@ -32,7 +34,7 @@ interface ITodoTitleChanged {
 class TodoTitleChanged extends Event<ITodoTitleChanged> {
 
   constructor (aggregateId: string, version: number, payload: ITodoTitleChanged) {
-    super(aggregateId, EVENTS.todoCreated, version, payload);
+    super(aggregateId, EVENTS.todoTitleChanged, version, payload);
   }
 }
 
@@ -42,7 +44,7 @@ interface ITodoResolved {
 class TodoResolved extends Event<ITodoResolved> {
 
   constructor (aggregateId: string, version: number, payload: ITodoResolved) {
-    super(aggregateId, EVENTS.todoCreated, version, payload);
+    super(aggregateId, EVENTS.todoResolved, version, payload);
   }
 }
 
@@ -111,6 +113,17 @@ class ChangeTodoTitleHandler implements ICommandHandler<IChangeTodoTitle> {
   }
 }
 
+class Notifier extends EventHandler {
+
+  constructor (eventDispatcher: IEventDispatcher) {
+    super(eventDispatcher);
+  }
+
+  [EVENTS.todoCreated] (event: TodoCreated) {
+    console.log(event.name, event.payload);
+  }
+}
+
 // --------------------------------------------------------------------------------------------------------------
 /**
  * Tests.
@@ -119,13 +132,10 @@ async function runTests () {
   let context = new LocalContext('Todos');
   let eventStream = new MemoryEventBus();
   let eventStore = new EventStore(eventStream, new MemoryRepository());
+  let notifier = new Notifier(eventStream);
 
   context.registerCommandHandler('CreateTodo', new CreateTodoHandler(eventStore));
   context.registerCommandHandler('ChangeTodoTitle', new ChangeTodoTitleHandler(eventStore));
-
-  eventStream.register(event => {
-    console.log(event);
-  });
 
   try {
     let newTodoId = uuid.v1();
