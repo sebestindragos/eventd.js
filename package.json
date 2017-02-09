@@ -1,11 +1,19 @@
 {
   "name": "eventd",
   "version": "1.0.0",
-  "description": "",
+  "description": "JavaScript library used for developing applications based on (D)DDD, CQRS and Event Sourcing.",
+  "keywords": [
+    "ddd",
+    "cqrs",
+    "eventsourcing",
+    "evented",
+    "eventd"
+  ],
   "main": "build/main.js",
   "typings": "build/main.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "gulp symlink && gulp build"
   },
   "repository": {
     "type": "git",
