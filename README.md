@@ -12,7 +12,7 @@ for building different constructs.
 
 # Instalation
 
-Install the library using `npm install eventd`.
+Install the library using `npm install eventd.js`.
 
 # Tutorial
 
