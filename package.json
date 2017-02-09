@@ -1,5 +1,5 @@
 {
-  "name": "eventd",
+  "name": "eventd.js",
   "version": "1.0.0",
   "description": "JavaScript library used for developing applications based on (D)DDD, CQRS and Event Sourcing.",
   "keywords": [
@@ -13,7 +13,7 @@
   "typings": "build/main.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublish": "gulp symlink && gulp build"
+    "prepublish": "gulp"
   },
   "repository": {
     "type": "git",
