@@ -24,7 +24,7 @@ export class EventHandler {
   private dispatch (event: IEvent<any>) : void {
     let handler = this[event.name];
     if ( handler && (typeof handler === 'function') ) {
-      handler(event);
+      handler.call(this, event);
     }
   }
 }
