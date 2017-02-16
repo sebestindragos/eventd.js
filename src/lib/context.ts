@@ -122,7 +122,7 @@ export class RemoteContext implements IContext {
 
   private runProjections (event: IEvent<any>) : void {
     this._projections
-      .filter(registrant => registrant.isForEvent)
+      .filter(registrant => registrant.isForEvent === event.name)
       .map(registrant => registrant.handler)
       .forEach(projection => {
         projection.handle(event);
