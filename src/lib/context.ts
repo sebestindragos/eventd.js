@@ -120,13 +120,14 @@ export class RemoteContext implements IContext {
     return query.execute(filters);
   }
 
-  private runProjections (event: IEvent<any>) : void {
-    this._projections
+  private async runProjections (event: IEvent<any>) : Promise<void> {
+    let projections = this._projections
       .filter(registrant => registrant.isForEvent === event.name)
-      .map(registrant => registrant.handler)
-      .forEach(projection => {
-        projection.handle(event);
-      });
+      .map(registrant => registrant.handler);
+
+    for (let projection of projections) {
+      await projection.handle(event);
+    }
   }
 }
 
