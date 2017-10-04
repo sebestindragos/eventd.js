@@ -14,7 +14,7 @@ export class EventHandler {
    */
   protected constructor (eventDispatcher: IEventDispatcher) {
     eventDispatcher.register((event: IEvent<any>) => {
-      this.dispatch(event);
+      return this.dispatch(event);
     });
   }
 
@@ -24,7 +24,7 @@ export class EventHandler {
   private dispatch (event: IEvent<any>) : void {
     let handler = this[event.name];
     if ( handler && (typeof handler === 'function') ) {
-      handler.call(this, event);
+      return handler.call(this, event);
     }
   }
 }
