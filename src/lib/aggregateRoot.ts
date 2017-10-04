@@ -34,7 +34,31 @@ export class AggregateRoot {
   }
 
   loadFromEvents (events: IEvent<any>[]) : void {
-    events.forEach(event => this.applyChange(event, false));
+    events.forEach(event => {
+      /**
+       * Handle concurency exceptions.
+       *
+       * An event is conflicting if it's version is equal to the current version
+       * of the aggregate, because it means it was generated from a past version of the AR.
+       * Conflicts are resolved by calling a special event handler on the AR object with the
+       * name of the event in cause prepended by a '@' symbol. In that handler the AR can decide
+       * what action need to be done, it can completelly ignore the conflict or it can apply
+       * a new change that sets or reverts the state to a previous value. These events will
+       * then be published to the queue as new events.
+       */
+      if (this._version === event.version) {
+        let eventHandlerName = `@${event.name}`;
+        let internalHandler = this[eventHandlerName];
+        if ( internalHandler && (typeof internalHandler === 'function') ) {
+          internalHandler.call(this, event);
+        }
+
+        // do not apply the conflicting event
+        return;
+      }
+
+      this.applyChange(event, false);
+    });
   }
 
   /**
@@ -50,8 +74,6 @@ export class AggregateRoot {
       throw new Error(`Aggregate must have a ${event.name} handler.`);
 
     internalHandler.call(this, event);
-
-    // handle concurency exceptions
 
     // increase aggregate version
     this._version = event.version;

@@ -1,5 +1,3 @@
-import * as uuid from 'uuid';
-
 import {EVENTS} from './events';
 import {IEvent, Event} from '../lib/event';
 import {AggregateRoot} from '../lib/aggregateRoot';
@@ -74,6 +72,15 @@ class Todo extends AggregateRoot {
   [EVENTS.todoTitleChanged] (event: IEvent<ITodoTitleChanged>) {
     this._title = event.payload.title;
   }
+
+  /**
+   * Conflict handlers.
+   */
+  [`@${EVENTS.todoTitleChanged}`] (event: IEvent<ITodoTitleChanged>) {
+
+    console.log('conflicting change title detected');
+    console.log(`old value: ${this._title}; conflicting value: ${event.payload.title}`);
+  }
 }
 
 /**
@@ -131,19 +138,27 @@ class Notifier extends EventHandler {
 async function runTests () {
   let context = new LocalContext('Todos');
   let eventStream = new MemoryEventBus();
-  let eventStore = new EventStore(eventStream, new MemoryRepository());
+  let repo = new MemoryRepository();
+  let eventStore = new EventStore(eventStream, repo);
   let notifier = new Notifier(eventStream);
 
   context.registerCommandHandler('CreateTodo', new CreateTodoHandler(eventStore));
   context.registerCommandHandler('ChangeTodoTitle', new ChangeTodoTitleHandler(eventStore));
 
   try {
-    let newTodoId = uuid.v1();
+    let newTodoId = 'some-random-generated-id';
 
     await context.command('CreateTodo', new Command<ICreateTodo>(newTodoId, {title: 'finish project'}));
     await context.command('ChangeTodoTitle', new Command<IChangeTodoTitle>(newTodoId, {
       title: 'finish project sometime this year ...'
     }));
+
+    // publish artificial duplicate event in the memory repo
+    repo.save(new TodoTitleChanged(newTodoId, 1, {title: 'conflicting title'}))
+    await context.command('ChangeTodoTitle', new Command<IChangeTodoTitle>(newTodoId, {
+      title: 'after conflict title.'
+    }));
+    console.log('done');
 
   } catch (ex) {
     console.trace(ex);
