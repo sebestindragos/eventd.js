@@ -3,8 +3,8 @@
  *
  * @author Dragos Sebestin
  */
-export interface IEvent <Payload> {
-  aggregateId: string,
+export interface IEvent <Payload, IndexType = string> {
+  aggregateId: IndexType,
   name: string,
   timestamp: number,
   version: number,
@@ -16,8 +16,8 @@ export interface IEvent <Payload> {
  *
  * @author Dragos Sebestin
  */
-export class Event <Payload> implements IEvent<Payload> {
-  aggregateId = '';
+export class Event <Payload, IndexType = string> implements IEvent<Payload, IndexType> {
+  aggregateId: IndexType;
   name = '';
   timestamp = Date.now();
   version = -1;
@@ -27,7 +27,7 @@ export class Event <Payload> implements IEvent<Payload> {
    * Class constructor.
    */
   constructor (
-    aggregateId: string,
+    aggregateId: IndexType,
     name: string,
     version: number,
     payload: Payload
