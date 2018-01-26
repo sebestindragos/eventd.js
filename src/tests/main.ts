@@ -36,15 +36,15 @@ class TodoTitleChanged extends Event<ITodoTitleChanged> {
   }
 }
 
-interface ITodoResolved {
-}
+// interface ITodoResolved {
+// }
 
-class TodoResolved extends Event<ITodoResolved> {
+// class TodoResolved extends Event<ITodoResolved> {
 
-  constructor (aggregateId: string, version: number, payload: ITodoResolved) {
-    super(aggregateId, EVENTS.todoResolved, version, payload);
-  }
-}
+//   constructor (aggregateId: string, version: number, payload: ITodoResolved) {
+//     super(aggregateId, EVENTS.todoResolved, version, payload);
+//   }
+// }
 
 /**
  * Define aggregates
@@ -55,6 +55,7 @@ class Todo extends AggregateRoot {
 
   constructor (todoId: string, payload?: ITodoCreated) {
     super(todoId);
+    this._checked;
 
     if (payload)
       this.applyChange(new TodoCreated(super.id, super.getNextVersion(), payload));
@@ -64,7 +65,7 @@ class Todo extends AggregateRoot {
     this.applyChange(new TodoTitleChanged(super.id, super.getNextVersion(), {title: newTitle}));
   }
 
-  [EVENTS.todoCreated] (event: IEvent<ITodoCreated>) {
+  [EVENTS.todoCreated] (event: TodoCreated) {
     this._title = event.payload.title;
     this._checked = event.payload.checked;
   }
@@ -77,7 +78,6 @@ class Todo extends AggregateRoot {
    * Conflict handlers.
    */
   [`@${EVENTS.todoTitleChanged}`] (event: IEvent<ITodoTitleChanged>) {
-
     console.log('conflicting change title detected');
     console.log(`old value: ${this._title}; conflicting value: ${event.payload.title}`);
   }
@@ -99,7 +99,7 @@ class CreateTodoHandler implements ICommandHandler<ICreateTodo> {
       checked: false
     });
 
-    this._eventStore.save(todo);
+    await this._eventStore.save(todo);
   }
 }
 
@@ -140,7 +140,7 @@ async function runTests () {
   let eventStream = new MemoryEventBus();
   let repo = new MemoryRepository();
   let eventStore = new EventStore(eventStream, repo);
-  let notifier = new Notifier(eventStream);
+  let notifier = new Notifier(eventStream); notifier;
 
   context.registerCommandHandler('CreateTodo', new CreateTodoHandler(eventStore));
   context.registerCommandHandler('ChangeTodoTitle', new ChangeTodoTitleHandler(eventStore));
@@ -154,7 +154,8 @@ async function runTests () {
     }));
 
     // publish artificial duplicate event in the memory repo
-    repo.save(new TodoTitleChanged(newTodoId, 1, {title: 'conflicting title'}))
+    await repo.save(new TodoTitleChanged(newTodoId, 1, {title: 'conflicting title'}))
+
     await context.command('ChangeTodoTitle', new Command<IChangeTodoTitle>(newTodoId, {
       title: 'after conflict title.'
     }));

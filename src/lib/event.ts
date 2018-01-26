@@ -17,11 +17,11 @@ export interface IEvent <Payload> {
  * @author Dragos Sebestin
  */
 export class Event <Payload> implements IEvent<Payload> {
-  aggregateId = null;
+  aggregateId = '';
   name = '';
   timestamp = Date.now();
   version = -1;
-  payload = null;
+  payload: Payload;
 
   /**
    * Class constructor.

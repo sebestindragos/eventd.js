@@ -51,15 +51,15 @@ export class LocalContext implements IContext {
    */
 
   async command (commandName: string, command: ICommand<any>) : Promise<void> {
-    if (!this._commandHandlers.has(commandName))
-      throw new Error(`${this._name} context has no command handler registered for ${commandName}.`);
-
     let handler = this._commandHandlers.get(commandName);
+    if (!handler)
+      throw new Error(`${this._name} context has no command handler registered for ${commandName}.`);
 
     await handler.execute(command);
   }
 
   async query <ReturnType> (name: string, filters: any) : Promise<ReturnType> {
+    name; filters;
     throw new Error('not implemented');
   }
 }
@@ -109,14 +109,15 @@ export class RemoteContext implements IContext {
    */
 
   async command (commandName: string, command: ICommand<any>) : Promise<void> {
+    commandName; command;
     throw new Error('not implemented');
   }
 
   query <ReturnType> (name: string, filters: any) : Promise<ReturnType> {
-    if (!this._queries.has(name))
+    let query = this._queries.get(name);
+    if (!query)
       throw new Error(`${this._name} context has no registered query named ${name}.`);
 
-    let query: IQuery<ReturnType> = this._queries.get(name);
     return query.execute(filters);
   }
 

@@ -16,10 +16,10 @@ export interface ICommand <Payload> {
  * @author Dragos Sebestin
  */
 export class Command <Payload> implements ICommand<Payload> {
-  aggregateId: string = null;
+  aggregateId: string = '';
   timestamp: number = Date.now();
 
-  payload: Payload = null;
+  payload: Payload;
 
   /**
    * Class constructor.

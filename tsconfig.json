@@ -1,7 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "alwaysStrict": true,
+    "emitBOM": true,
+    "forceConsistentCasingInFileNames": true,
     "module": "commonjs",
-    "moduleResolution": "node"
+    "noEmitOnError": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "target": "es6"
   }
 }

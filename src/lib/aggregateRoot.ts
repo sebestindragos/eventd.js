@@ -1,4 +1,4 @@
-import {IEvent, Event} from './event';
+import {IEvent} from './event';
 
 /**
  * Aggregate root base class.
@@ -6,7 +6,7 @@ import {IEvent, Event} from './event';
  * @author Dragos Sebestin
  */
 export class AggregateRoot {
-  private _id: string = null; // UUID
+  private _id: string = ''; // UUID
   private _version: number = -1;
 
   private _changes: IEvent<any>[] = [];
@@ -48,7 +48,7 @@ export class AggregateRoot {
        */
       if (this._version === event.version) {
         let eventHandlerName = `@${event.name}`;
-        let internalHandler = this[eventHandlerName];
+        let internalHandler = (this as any)[eventHandlerName];
         if ( internalHandler && (typeof internalHandler === 'function') ) {
           internalHandler.call(this, event);
         }
@@ -69,7 +69,7 @@ export class AggregateRoot {
       this._changes.push(event);
 
     // call the internal event handler of the aggregate
-    let internalHandler = this[event.name];
+    let internalHandler = (this as any)[event.name];
     if ( !internalHandler || (typeof internalHandler !== 'function') )
       throw new Error(`Aggregate must have a ${event.name} handler.`);
 

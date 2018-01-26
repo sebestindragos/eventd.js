@@ -22,7 +22,7 @@ export class EventHandler {
    * Dispatch the incoming event to the appropriate handler.
    */
   private dispatch (event: IEvent<any>) : void {
-    let handler = this[event.name];
+    let handler = (this as any)[event.name];
     if ( handler && (typeof handler === 'function') ) {
       return handler.call(this, event);
     }
