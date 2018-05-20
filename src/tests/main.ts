@@ -9,6 +9,8 @@ import {EventStore} from '../lib/eventStore';
 import {LocalContext} from '../lib/context';
 import {EventHandler} from '../lib/eventHandler';
 import {IEventDispatcher} from '../lib/IEventDispatcher';
+import { MemorySnapshotRepository } from './memorySnapshotRepository';
+import { IAggregateSnapshot } from '../lib/IAggregateSnapshot';
 
 /**
  * Define events
@@ -50,15 +52,31 @@ class TodoTitleChanged extends Event<ITodoTitleChanged> {
  * Define aggregates
  */
 class Todo extends AggregateRoot {
-  private _title: string;
-  private _checked: boolean;
+  private _title: string = '';
+  private _checked: boolean = false;
+
 
   constructor (todoId: string, payload?: ITodoCreated) {
-    super(todoId);
+    super(todoId, 1);
     this._checked;
 
     if (payload)
       this.applyChange(new TodoCreated(super.id, super.getNextVersion(), payload));
+  }
+
+  snapshot () {
+    return {
+      title: this._title,
+      checked: this._checked
+    };
+  }
+
+  applySnapshot (snapshot: IAggregateSnapshot) : void {
+    super.applySnapshot(snapshot);
+
+    let data = snapshot.data;
+    this._title = data.title;
+    this._checked = data.checked;
   }
 
   changeTitle (newTitle: string) {
@@ -139,7 +157,8 @@ async function runTests () {
   let context = new LocalContext('Todos');
   let eventStream = new MemoryEventBus();
   let repo = new MemoryRepository();
-  let eventStore = new EventStore(eventStream, repo);
+  let snapshotRepo = new MemorySnapshotRepository();
+  let eventStore = new EventStore(eventStream, repo, snapshotRepo);
   let notifier = new Notifier(eventStream); notifier;
 
   context.registerCommandHandler('CreateTodo', new CreateTodoHandler(eventStore));

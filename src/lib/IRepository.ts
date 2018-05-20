@@ -15,5 +15,8 @@ export interface IRepository {
   /**
    * Load domain events for a given aggregate.
    */
-  load (aggregateId: string) : Promise<IEvent<any>[]>;
+  load (
+    aggregateId: string,
+    fromVersion: number
+  ) : Promise<IEvent<any>[]>;
 }

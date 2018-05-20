@@ -1,6 +1,7 @@
 import {IRepository} from './IRepository';
 import {IEventBus} from './IEventBus';
 import {AggregateRoot} from './aggregateRoot';
+import { IAggregateSnapshotRepository } from './ISnapshotRepository';
 
 /**
  * Event store class as defined by the Event Sourcing pattern.
@@ -14,7 +15,11 @@ export class EventStore {
   /**
    * Class constructor.
    */
-  constructor (private _eventBus: IEventBus, private _repository: IRepository) { }
+  constructor (
+    private _eventBus: IEventBus,
+    private _repository: IRepository,
+    private _snapshotRepository: IAggregateSnapshotRepository
+  ) { }
 
   /**
    * Persist an aggregate's uncommited changes to the repository and
@@ -27,6 +32,18 @@ export class EventStore {
     let promises = events.map(event => this._repository.save(event));
     await Promise.all(promises);
 
+    // save aggregate snapshot
+    if (
+      aggregate.eventSnapshotCount > 0 &&
+      aggregate.getCurrentVersion() % aggregate.eventSnapshotCount === 0
+    ) {
+      await this._snapshotRepository.save({
+        aggregateId: aggregate.id,
+        version: aggregate.getCurrentVersion(),
+        data: aggregate.snapshot()
+      });
+    }
+
     // publish events to subscribers
     promises = events.map(event => this._eventBus.publish(event));
     await Promise.all(promises);
@@ -36,7 +53,18 @@ export class EventStore {
    * Rehydrate an aggregate by replaying events from the store.
    */
   async rehydrate (aggregate: AggregateRoot) : Promise<void> {
-    let events = await this._repository.load(aggregate.id);
+    let fromVersion = -1;
+    // load latest snapshot
+    let snapshot = await this._snapshotRepository.load(aggregate.id);
+    if (snapshot) {
+      aggregate.applySnapshot(snapshot);
+      fromVersion = snapshot.version;
+    }
+
+    // load remaining events
+    let events = await this._repository.load(
+      aggregate.id, fromVersion
+    );
     aggregate.loadFromEvents(events);
   }
 }

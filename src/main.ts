@@ -9,4 +9,6 @@ export * from './lib/IEventDispatcher';
 export * from './lib/IProjection';
 export * from './lib/IQuery';
 export * from './lib/IRepository';
+export * from './lib/ISnapshotRepository';
+export * from './lib/IAggregateSnapshot';
 export * from './lib/eventHandler';

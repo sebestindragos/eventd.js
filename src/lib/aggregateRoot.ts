@@ -1,4 +1,5 @@
 import {IEvent} from './event';
+import { IAggregateSnapshot } from './IAggregateSnapshot';
 
 /**
  * Aggregate root base class.
@@ -14,17 +15,24 @@ export class AggregateRoot {
   /**
    * Class constructor.
    */
-  constructor (id: string) {
+  constructor (
+    id: string,
+    public eventSnapshotCount: number = 0
+  ) {
     this._id = id;
-   }
+  }
 
-   get id () : string {
-     return this._id;
-   }
+  get id () : string {
+    return this._id;
+  }
 
-   getNextVersion () : number {
-     return this._version + 1;
-   }
+  getNextVersion () : number {
+    return this._version + 1;
+  }
+
+  getCurrentVersion () : number {
+    return this._version;
+  }
 
   /**
    * Retrieve and reset the list of uncommited changes.
@@ -59,6 +67,14 @@ export class AggregateRoot {
 
       this.applyChange(event, false);
     });
+  }
+
+  snapshot () : any {
+    throw new Error('Aggregate snapshot method not implemented.');
+  }
+
+  applySnapshot (snapshot: IAggregateSnapshot) : void {
+    this._version = snapshot.version;
   }
 
   /**
