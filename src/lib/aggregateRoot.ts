@@ -60,9 +60,6 @@ export class AggregateRoot {
         if ( internalHandler && (typeof internalHandler === 'function') ) {
           internalHandler.call(this, event);
         }
-
-        // do not apply the conflicting event
-        return;
       }
 
       this.applyChange(event, false);
